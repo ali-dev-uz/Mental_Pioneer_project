@@ -33,7 +33,7 @@ async def crypto_checker_paid(call: types.CallbackQuery):
     db_request3 = await db.select_students_one(call.message.chat.id)
     ca = CryptAPIHelper(
         'bep20/usdt',
-        '0x7292E1E11f5bfae961c4B1d4d4600385142e9c92',
+        '666666666666666',
         'https://webhook.site/test-bep202',
         {
             'order_id': f'crypto{call.message.chat.id}'
@@ -55,8 +55,8 @@ async def crypto_checker_paid(call: types.CallbackQuery):
         if 60 >= float(data_api2['callbacks'][0]['value_coin']) >= 52:
             try:
                 chat_select = {
-                    "ar": -1002076053983,
-                    "en": -1002037504841
+                    "ar": -000,
+                    "en": -00
                 }
                 await dp.bot.unban_chat_member(chat_id=chat_select[db_request3['language']],
                                                user_id=call.message.chat.id,
@@ -121,7 +121,7 @@ async def stripe_checker(call: types.CallbackQuery):
         cost = 57
     ca = CryptAPIHelper(
         'bep20/usdt',
-        '0x7292E1E11f5bfae961c4B1d4d4600385142e9c92',
+        '00000000000',
         'https://webhook.site/test-bep202',
         {
             'order_id': f'crypto{call.message.chat.id}'
@@ -222,7 +222,7 @@ async def payment(message: types.Message):
                                                             member_limit=1,
                                                             name=f"Link{message.chat.id}")
         keyword_button = await invite_link_add(channel_link['invite_link'], db_request['language'])
-        await message.answer_photo(photo='https://t.me/bsbsi39idjdjxj/620',
+        await message.answer_photo(photo='https://t.me/0000/620',
                                    caption=f"{successful_payment[db_request['language']]}",
                                    reply_markup=keyword_button)
         await dp.bot.send_message(chat_id=-1001871966486,
@@ -252,20 +252,20 @@ async def get_day_of_week(lan):
     day_of_weekly = current_time.weekday()
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     channel_ids = {
-        "Monday": {"en": -1002053101294,
-                   "ar": -1002137395521},
-        "Tuesday": {"en": -1002104317649,
-                    "ar": -1002009521367},
-        "Wednesday": {"en": -1002001918933,
-                      "ar": -1002050117788},
-        "Thursday": {"en": -1002025930027,
-                     "ar": -1001830011413},
-        "Friday": {"en": -1002139375128,
-                   "ar": -1002046248938},
-        "Saturday": {"en": -1002105710154,
-                     "ar": -1001900177055},
-        "Sunday": {"en": -1002047687481,
-                   "ar": -1002028676437}
+        "Monday": {"en": -10020503101294,
+                   "ar": -10021307395521},
+        "Tuesday": {"en": -10021004317649,
+                    "ar": -10020009521367},
+        "Wednesday": {"en": -10002001918933,
+                      "ar": -10002050117788},
+        "Thursday": {"en": -10020025930027,
+                     "ar": -10010830011413},
+        "Friday": {"en": -10021309375128,
+                   "ar": -10020046248938},
+        "Saturday": {"en": -10002105710154,
+                     "ar": -1000900177055},
+        "Sunday": {"en": -10020407687481,
+                   "ar": -100200028676437}
     }
     return channel_ids[days[day_of_weekly]][lan], days[day_of_weekly]
 
