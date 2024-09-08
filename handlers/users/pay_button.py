@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 
 import pytz
@@ -5,10 +6,11 @@ from aiogram import types
 from cryptapi import CryptAPIHelper
 from datetime import datetime, timedelta
 
-from handlers.users.button_builder import invite_link_add, i_paid_button, pay_button
+from handlers.users.button_builder import invite_link_add, i_paid_button, pay_button, pay_stripe, pay_crypto, \
+    invite_link_add_all
 from handlers.users.monthly_payment import display_date
 from handlers.users.words import successful_payment, already_paid, waiting_paid, bug_paid, re_start_text, next_start, \
-    start_text, text_57_py
+    start_text, text_57_py, list_course, crypto_pay
 from loader import dp, db
 
 
@@ -18,7 +20,7 @@ async def crypto_checker_back(call: types.CallbackQuery):
     db_request = await db.select_students_one(member)
     lan = db_request["language"]
     keyword_but = await pay_button(lan)
-    message_id = await call.message.answer(start_text[lan], reply_markup=keyword_but)
+    message_id = await call.message.answer(crypto_pay[lan], reply_markup=keyword_but)
 
     try:
         await call.message.delete()
@@ -28,7 +30,20 @@ async def crypto_checker_back(call: types.CallbackQuery):
                                         telegram_id=member)
 
 
-@dp.callback_query_handler(text='paid')
+@dp.callback_query_handler(text='crypto')
+async def crypto_checker_crypto(call: types.CallbackQuery):
+    member = call.message.chat.id
+    db_request = await db.select_students_one(member)
+    lan = db_request["language"]
+    try:
+        await call.message.delete()
+    except:
+        pass
+    keyboard = await pay_crypto(lan)
+    await call.message.answer(text=f"{list_course[lan]}", reply_markup=keyboard)
+
+
+@dp.callback_query_handler(text=['course1c', 'course2c', 'course3c', 'course4c', 'courseallc'])
 async def crypto_checker_paid(call: types.CallbackQuery):
     db_request3 = await db.select_students_one(call.message.chat.id)
     ca = CryptAPIHelper(
@@ -47,78 +62,90 @@ async def crypto_checker_paid(call: types.CallbackQuery):
     )
     address_pay2 = ca.get_address()['address_in']
     data_api2 = ca.get_logs()
-
+    chat_type = call.data
+    db_request = await db.select_students_one(call.message.chat.id)
     if not data_api2['callbacks']:
         print("Address (BEP20): " + address_pay2)
         await call.answer(text=f"{waiting_paid[db_request3['language']]}", show_alert=True)
     else:
-        if 60 >= float(data_api2['callbacks'][0]['value_coin']) >= 52:
+        if 9 <= float(data_api2['callbacks'][0]['value_coin']) <= 10:
             try:
-                chat_select = {
-                    "ar": -1002076053983,
-                    "en": -1002037504841
-                }
-                await dp.bot.unban_chat_member(chat_id=chat_select[db_request3['language']],
+                chat_select = {'course1c': {"ar": -1002245707991, "en": -1002193321511},
+                               'course2c': {"ar": -1002213759182, "en": -1002246600813},
+                               'course3c': {"ar": -1002222132173, "en": -1002215313141},
+                               'course4c': {"ar": -1002153988064, "en": -1002216267911},
+                               }
+                await dp.bot.unban_chat_member(chat_id=chat_select[chat_type][db_request['language']],
                                                user_id=call.message.chat.id,
                                                only_if_banned=True)
-                channel_link = await dp.bot.create_chat_invite_link(chat_id=chat_select[db_request3['language']],
-                                                                    member_limit=1,
-                                                                    name=f"Repaid{call.message.chat.id}")
-                keyword_button = await invite_link_add(channel_link['invite_link'], db_request3['language'])
-                await dp.bot.send_message(text=f"{text_57_py[db_request3['language']]}", reply_markup=keyword_button)
+                channel_link = await dp.bot.create_chat_invite_link(
+                    chat_id=chat_select[chat_type][db_request['language']],
+                    member_limit=1,
+                    name=f"Repaid{call.message.chat.id}")
+                keyword_button = await invite_link_add(channel_link['invite_link'], db_request['language'])
+                await call.message.answer_photo(photo='https://t.me/bsbsi39idjdjxj/620',
+                                                caption=f"{text_57_py[db_request['language']]}",
+                                                reply_markup=keyword_button)
                 today = datetime.today()
                 future_date = today + timedelta(days=30)
                 formatted_date = future_date.strftime("%d.%m.%Y")
-                await db.add_lifetime(chats_id=call.message.chat.id,
-                                      added_date=f"{formatted_date}")
+                await db.add_lifetime(user_id=call.message.chat.id,
+                                      added_date=f"{formatted_date}",
+                                      channel_id=chat_select[chat_type][db_request['language']],
+                                      course_id=chat_type)
                 await dp.bot.send_message(chat_id=-1001871966486,
-                                          text=f"🟢<b>New Paid</b>\n"
-                                               f"💵Amount: {data_api2['callbacks'][0]['value_coin']}\n"
-                                               f"👤Payer: {call.message.chat.get_mention(as_html=True)}")
-                db_partner = await db.select_students_one(db_request3['referral_id'])
-                await db.update_repaid_referral_id(telegram_id=int(db_request3['referral_id']),
-                                                   repaid_referral_id=int(db_partner['repaid_referral_id']) + 1)
+                                          text=f"🟢<b>Mental Pioneer</b>\n"
+                                               f"💵Amount: {data_api2['callbacks'][0]['value_coin']}USDT\n"
+                                               f"👤Payer: {call.message.chat.id}")
             except:
                 pass
-        elif float(data_api2['callbacks'][0]['value_coin']) >= 255:
-            channel_number, days_week = await get_day_of_week(db_request3['language'])
-            data_today_now = await get_today_date()
-            await db.update_student_time(added_time=f"{data_today_now}",
-                                         telegram_id=call.message.chat.id)
-            await db.update_student_week(week=days_week, telegram_id=call.message.chat.id)
-            await db.update_student_chat_id(chat_id=channel_number, telegram_id=call.message.chat.id)
-            channel_link = await dp.bot.create_chat_invite_link(chat_id=channel_number,
-                                                                member_limit=1,
-                                                                name=f"Link{call.message.chat.id}")
-            keyword_button = await invite_link_add(channel_link['invite_link'], db_request3['language'])
+        elif 25 <= float(data_api2['callbacks'][0]['value_coin']) <= 30 and call.data == "courseallc":
+            chat_select = {'course1c': {"ar": -1002245707991, "en": -1002193321511},
+                           'course2c': {"ar": -1002213759182, "en": -1002246600813},
+                           'course3c': {"ar": -1002222132173, "en": -1002215313141},
+                           'course4c': {"ar": -1002153988064, "en": -1002216267911},
+                           }
+            keyword_buttons_link = []
+            for one_one in chat_select.keys():
+                await dp.bot.unban_chat_member(chat_id=chat_select[one_one][db_request['language']],
+                                               user_id=call.message.chat.id,
+                                               only_if_banned=True)
+                channel_link = await dp.bot.create_chat_invite_link(
+                    chat_id=chat_select[one_one][db_request['language']],
+                    member_limit=1,
+                    name=f"Repaid{call.message.chat.id}")
+                keyword_buttons_link.append(channel_link['invite_link'])
+                today = datetime.today()
+                future_date = today + timedelta(days=30)
+                formatted_date = future_date.strftime("%d.%m.%Y")
+                await db.add_lifetime(user_id=call.message.chat.id,
+                                      added_date=f"{formatted_date}",
+                                      channel_id=chat_select[one_one][db_request['language']],
+                                      course_id=one_one)
+                await asyncio.sleep(0.001)
+            keyword_button = await invite_link_add_all(keyword_buttons_link, db_request['language'])
             await call.message.answer_photo(photo='https://t.me/bsbsi39idjdjxj/620',
-                                            caption=f"{successful_payment[db_request3['language']]}",
+                                            caption=f"{text_57_py[db_request['language']]}",
                                             reply_markup=keyword_button)
             await dp.bot.send_message(chat_id=-1001871966486,
-                                      text=f"🟢<b>New Paid</b>\n"
-                                           f"💵Amount: {data_api2['callbacks'][0]['value_coin']}\n"
-                                           f"👤Payer: {call.message.chat.get_mention(as_html=True)}")
-            await db.update_student_pay_status(pay_status=1,
-                                               telegram_id=call.message.chat.id)
-            db_partner = await db.select_students_one(db_request3['referral_id'])
-            await db.update_not_payment_refers(telegram_id=int(db_request3['referral_id']),
-                                               not_payment_refers=int(db_partner['not_payment_refers']) + 1)
-            today = datetime.today()
-            future_date = today + timedelta(days=23)
-            formatted_date = future_date.strftime("%d.%m.%Y")
-            await db.add_lifetime(chats_id=call.message.chat.id,
-                                  added_date=f"{formatted_date}")
-            await call.message.delete()
+                                      text=f"🟢<b>Mental Pioneer</b>\n"
+                                           f"💵Amount: {data_api2['callbacks'][0]['value_coin']}USDT\n"
+                                           f"👤Payer: {call.message.chat.id}")
+            try:
+                await dp.bot.delete_message(chat_id=call.message.chat.id,
+                                            message_id=int(db_request['pay_message_id']))
+            except:
+                pass
         else:
             await call.answer(text=f"{bug_paid[db_request3['language']]}", show_alert=True)
 
 
-@dp.callback_query_handler(text=['crypto', 'cryptoz'])
-async def stripe_checker(call: types.CallbackQuery):
+@dp.callback_query_handler(text=['course1', 'course2', 'course3', 'course4', 'courseall'])
+async def cryptos_checker(call: types.CallbackQuery):
     db_request2 = await db.select_students_one(call.message.chat.id)
-    cost = 257
-    if db_request2['pay_status'] == 2 or call.data == "cryptoz":
-        cost = 57
+    cost = 9.99
+    if call.data == "courseall":
+        cost = 27.1
     ca = CryptAPIHelper(
         'bep20/usdt',
         '0x7292E1E11f5bfae961c4B1d4d4600385142e9c92',
@@ -152,7 +179,7 @@ async def stripe_checker(call: types.CallbackQuery):
                f"⚠ إرسال أي عملة أخرى إلى هذا العنوان قد يؤدي إلى فقدان إيداعك.\n\n"
                "<b>يرجى ملاحظة، بعد إتمام الدفع، انقر على زر 'لقد دفعت' أدناه. يرجى الاحتفاظ بهذه الصفحة مفتوحة أثناء معالجة الدفع، والتي قد تستغرق ما يصل إلى 15 دقيقة.</b>\nانقر على الرسالة لنسخ عنوان المحفظة.")
 
-    keyboard_paid = await i_paid_button(db_request2['language'])
+    keyboard_paid = await i_paid_button(db_request2['language'], f"{call.data}c")
     if not data_api['callbacks']:
         print("Address (BEP20): " + address_pay)
         if db_request2['language'] == "en":
@@ -183,62 +210,68 @@ async def checkout(pre: types.PreCheckoutQuery):
 @dp.message_handler(content_types=types.ContentType.SUCCESSFUL_PAYMENT)
 async def payment(message: types.Message):
     db_request = await db.select_students_one(message.chat.id)
-    if 60 >= float(message.successful_payment.total_amount / 100) >= 52:
+    chat_type = message.successful_payment.invoice_payload
+    if 9 <= float(message.successful_payment.total_amount / 100) <= 10:
         try:
-            chat_select = {
-                "ar": -1002076053983,
-                "en": -1002037504841
-            }
-            await dp.bot.unban_chat_member(chat_id=chat_select[db_request['language']],
+            chat_select = {'course1': {"ar": -1002245707991, "en": -1002193321511},
+                           'course2': {"ar": -1002213759182, "en": -1002246600813},
+                           'course3': {"ar": -1002222132173, "en": -1002215313141},
+                           'course4': {"ar": -1002153988064, "en": -1002216267911},
+                           }
+            await dp.bot.unban_chat_member(chat_id=chat_select[chat_type][db_request['language']],
                                            user_id=message.chat.id,
                                            only_if_banned=True)
-            channel_link = await dp.bot.create_chat_invite_link(chat_id=chat_select[db_request['language']],
+            channel_link = await dp.bot.create_chat_invite_link(chat_id=chat_select[chat_type][db_request['language']],
                                                                 member_limit=1,
                                                                 name=f"Repaid{message.chat.id}")
             keyword_button = await invite_link_add(channel_link['invite_link'], db_request['language'])
-            await dp.bot.send_message(text=f"{text_57_py[db_request['language']]}", reply_markup=keyword_button)
+            await message.answer_photo(photo='https://t.me/bsbsi39idjdjxj/620',
+                                       caption=f"{text_57_py[db_request['language']]}",
+                                       reply_markup=keyword_button)
             today = datetime.today()
             future_date = today + timedelta(days=30)
             formatted_date = future_date.strftime("%d.%m.%Y")
-            await db.add_lifetime(chats_id=message.chat.id,
-                                  added_date=f"{formatted_date}")
+            await db.add_lifetime(user_id=message.chat.id,
+                                  added_date=f"{formatted_date}",
+                                  channel_id=chat_select[chat_type][db_request['language']],
+                                  course_id=chat_type)
             await dp.bot.send_message(chat_id=-1001871966486,
-                                      text=f"🟢<b>New Paid Bot 2</b>\n"
+                                      text=f"🟢<b>Mental Pioneer</b>\n"
                                            f"💵Amount: {message.successful_payment.total_amount / 100}{message.successful_payment.currency}\n"
-                                           f"👤Payer: {message.chat.get_mention(as_html=True)}")
-            db_partner = await db.select_students_one(db_request['referral_id'])
-            await db.update_repaid_referral_id(telegram_id=int(db_request['referral_id']),
-                                               repaid_referral_id=int(db_partner['repaid_referral_id']) + 1)
+                                           f"👤Payer: {message.chat.id}")
         except:
             pass
-    else:
-        channel_number, days_week = await get_day_of_week(db_request['language'])
-        data_today_now = await get_today_date()
-        await db.update_student_time(added_time=f"{data_today_now}",
-                                     telegram_id=message.chat.id)
-        await db.update_student_week(week=days_week, telegram_id=message.chat.id)
-        await db.update_student_chat_id(chat_id=channel_number, telegram_id=message.chat.id)
-        channel_link = await dp.bot.create_chat_invite_link(chat_id=channel_number,
-                                                            member_limit=1,
-                                                            name=f"Link{message.chat.id}")
-        keyword_button = await invite_link_add(channel_link['invite_link'], db_request['language'])
+    elif 25 <= float(message.successful_payment.total_amount / 100) <= 30 and chat_type == "all_course":
+        chat_select = {'course1': {"ar": -1002245707991, "en": -1002193321511},
+                       'course2': {"ar": -1002213759182, "en": -1002246600813},
+                       'course3': {"ar": -1002222132173, "en": -1002215313141},
+                       'course4': {"ar": -1002153988064, "en": -1002216267911},
+                       }
+        keyword_buttons_link = []
+        for one_one in chat_select.keys():
+            await dp.bot.unban_chat_member(chat_id=chat_select[one_one][db_request['language']],
+                                           user_id=message.chat.id,
+                                           only_if_banned=True)
+            channel_link = await dp.bot.create_chat_invite_link(chat_id=chat_select[one_one][db_request['language']],
+                                                                member_limit=1,
+                                                                name=f"Repaid{message.chat.id}")
+            keyword_buttons_link.append(channel_link['invite_link'])
+            today = datetime.today()
+            future_date = today + timedelta(days=30)
+            formatted_date = future_date.strftime("%d.%m.%Y")
+            await db.add_lifetime(user_id=message.chat.id,
+                                  added_date=f"{formatted_date}",
+                                  channel_id=chat_select[one_one][db_request['language']],
+                                  course_id=one_one)
+            await asyncio.sleep(0.001)
+        keyword_button = await invite_link_add_all(keyword_buttons_link, db_request['language'])
         await message.answer_photo(photo='https://t.me/bsbsi39idjdjxj/620',
-                                   caption=f"{successful_payment[db_request['language']]}",
+                                   caption=f"{text_57_py[db_request['language']]}",
                                    reply_markup=keyword_button)
         await dp.bot.send_message(chat_id=-1001871966486,
-                                  text=f"🟢<b>New Paid Bot 2</b>\n"
+                                  text=f"🟢<b>Mental Pioneer</b>\n"
                                        f"💵Amount: {message.successful_payment.total_amount / 100}{message.successful_payment.currency}\n"
-                                       f"👤Payer: {message.chat.get_mention(as_html=True)}")
-        await db.update_student_pay_status(pay_status=1,
-                                           telegram_id=message.chat.id)
-        db_partner = await db.select_students_one(db_request['referral_id'])
-        await db.update_not_payment_refers(telegram_id=int(db_request['referral_id']),
-                                           not_payment_refers=int(db_partner['not_payment_refers']) + 1)
-        today = datetime.today()
-        future_date = today + timedelta(days=23)
-        formatted_date = future_date.strftime("%d.%m.%Y")
-        await db.add_lifetime(chats_id=message.chat.id,
-                              added_date=f"{formatted_date}")
+                                       f"👤Payer: {message.chat.id}")
     try:
         await dp.bot.delete_message(chat_id=message.chat.id,
                                     message_id=int(db_request['pay_message_id']))

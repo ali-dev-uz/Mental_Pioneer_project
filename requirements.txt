@@ -21,3 +21,4 @@ yarl
 asyncpg
 pytz
 apscheduler
+python-cryptapi # pip install python-cryptapi

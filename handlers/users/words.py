@@ -3,13 +3,13 @@ select_language = {
     "en": "Please select a language 👇"
 }
 support_text = {
-    "en": "<b>If you have questions or need help,\nplease contact the Administrator!\nAdmin:</b> @khalafkx1984",
-    "ar": "<b>إذا كانت لديك أسئلة أو كنت بحاجة إلى مساعدة، يرجى الاتصال بالمسؤول! \nمسؤل:</b> @khalafkx1984"
+    "en": "<b>If you have questions or need help,\nplease contact the Administrator!\nAdmin:</b> @Sawmaa36",
+    "ar": "<b>إذا كانت لديك أسئلة أو كنت بحاجة إلى مساعدة، يرجى الاتصال بالمسؤول! \nمسؤل:</b> @Sawmaa36"
 }
 
 start_text = {
-    "en": "Welcome, Aspiring Sales Champion, to The Sales Mastery Channel, a haven of unique principles and values. Here, amidst the challenges of the sales world, you'll find refuge and support. Unlock the gateway to sales mastery by settling the fees. You now have two options: join the group directly for $57 or join and get the six-day training course for $257. Click the link below to start your transformative journey.",
-    "ar": "مرحبًا بكم في برنامج البرمجة التسويقية، حيث ستجدون مكانًا آمنًا يحمل مبادئ وقيمًا فريدة. هنا، وسط تحديات عالم المبيعات العديدة، ستجدون الدعم والمساندة اللازمين للنجاح في عالم المبيعات. ابدأوا رحلتكم الممتعة الان في البرمجة التسويقية من خلال تسديد الرسوم . لديكم الآن خيارين: الانضمام مباشرةً مقابل 57 دولارًا أو الانضمام والحصول على دورة التدريب لمدة ستة أيام مقابل 257 دولارًا. انقروا على الرابط أدناه لبدء رحلتكم التحولية. "
+    "en": "Welcome, Seeker of Knowledge and Strength,I am Mental Pioneer, your guide on this transformative journey. This channel is a sanctuary for those who seek to empower themselves through training and self-motivation. Here, you will find resources that will help you grow, not just in your professional life, but also on a personal level. Whether you're here for subliminal training or traditional learning methods, know that you're taking a step towards becoming a stronger version of yourself. Let's embark on this journey of self-improvement together. Welcome aboard!",
+    "ar": "مرحباً، يا طالب المعرفة والقوة،أنا الرائد العقلي، مرشدك في هذه الرحلة التحويلية. هذه القناة هي ملاذ لأولئك الذين يسعون لتمكين أنفسهم من خلال التدريب والتحفيز الذاتي. هنا، ستجد الموارد التي ستساعدك على النمو، ليس فقط في حياتك المهنية، ولكن أيضا على المستوى الشخصي.سواء كنت هنا للتدريب اللاواعي أو الأساليب التعليمية التقليدية، اعلم أنك تتخذ خطوة نحو أن تصبح نسخة أقوى من نفسك.دعنا نبدأ معاً هذه الرحلة نحو تحسين الذات. مرحباً بك على متن الرحلة!"
 }
 
 re_start_text = {
@@ -29,17 +29,25 @@ pay_button_text = {
            "crypto": "تشفير"}
 }
 
+pay_all_course = {
+    "en": "Purchase all courses",
+    "ar": "شراء كافة الدورات"
+}
+
+list_course = {
+    "en": "List of courses:",
+    "ar": "قائمة الدورات:"
+}
+
 stripe_data = {
     "en": {
         "label": "Product Price",
         "description": "You will have:\n"
-                       "- Intensive 1-week course\n"
                        "- Exclusive group"
     },
     "ar": {
         "label": "سعر المنتج",
         "description": "سوف تحصل على:\n"
-                       "- دورة مكثفة لمدة أسبوع\n"
                        "- مجموعة حصرية"
     }
 }
@@ -78,16 +86,8 @@ exam_none = {
 
 
 crypto_pay = {
-    "en": "<b>Crypto payment invoice</b>\n\n"
-          "<i>Payment Amount: 257 USDT (BEP20)\n"
-          "This check is valid for 3 hours\n"
-          "Important! Make sure to pay the full amount, if it is less than 257 USDT due to various network commissions, your money will not be refunded</i>\n\n"
-          "<b>Payment address (BEP20):</b> ",
-    "ar": "<b>فاتورة الدفع بالعملة المشفرة</b>\n\n"
-          "<i>مبلغ الدفع: 257 USDT (BEP20)\n"
-          "تمتاز هذه الشيك بصلاحية لمدة 3 ساعات\n"
-          "مهم! تأكد من دفع المبلغ الكامل، إذا كان أقل من 257 USDT بسبب العمولات المختلفة على الشبكة، لن يتم استرداد أموالك</i>\n\n"
-          "<b>عنوان الدفع (BEP20):</b> "
+    "en": "Please take a moment to explore and choose the channel that best suits your needs. Once you've made your selection, you can proceed to settle the payment for your chosen channel. This step will grant you full access to the wealth of resources and training materials available in your chosen channel.Additionally, we offer a special discount for those who choose to join all channels. This all-access pass not only provides you with a comprehensive learning experience but also ensures you get the most value for your investment.",
+    "ar": "يرجى أخذ لحظة لاستكشاف واختيار القناة التي تناسب احتياجاتك بشكل أفضل. بمجرد اختيارك، يمكنك المتابعة لتسوية الدفع للقناة التي اخترتها. هذه الخطوة ستمنحك الوصول الكامل إلى ثروة الموارد ومواد التدريب المتاحة في القناة التي اخترتها.بالإضافة إلى ذلك، نقدم خصمًا خاصًا لأولئك الذين يختارون الانضمام إلى جميع القنوات. هذا الباز يوفر لك تجربة تعلم شاملة ويضمن أيضًا أن تحصل على أقصى قيمة لاستثمارك."
 
 }
 
@@ -142,8 +142,16 @@ back_paid_button = {
 }
 
 text_57_py = {
-    "en": "Thank you for your payment! We're thrilled to have you with us. Get ready to explore valuable insights, opportunities, and connect with fellow sales professionals. We will send you your new website and credentials within the next 24 hours. Welcome aboard!",
-    "ar": "أشكركم على إتمام عملية الدفع بنجاحودعوني أرحب بكم بحرارة في مجتمعنا. استعدوا لاستكشاف الأفكار القيمة والفرص الجديدة والتواصل مع محترفي المبيعات الآخرين. سنقوم بإرسال موقعكم الإلكتروني الجديد وبيانات الدخول خلال الـ24 ساعة القادمة. مرحبًا بكم في الفر يق!"
+    "en": "Thank you for your payment and welcome to our community! To access your chosen channels, please follow the respective links provided. Each link will guide you to a wealth of resources and learning materials tailored to your chosen path.We're excited to have you on board and look forward to supporting you on your journey of self-improvement.",
+    "ar": "شكراً لك على الدفع ومرحباً بك في مجتمعنا!للوصول إلى القنوات التي اخترتها، يرجى اتباع الروابط المقدمة. كل رابط سيوجهك إلى ثروة من الموارد ومواد التعلم المصممة خصيصاً للمسار الذي اخترته.نحن متحمسون لانضمامك إلينا ونتطلع إلى دعمك في رحلتك نحو تحسين الذات."
 }
 
+paid_type_name_stripe = {
+    "en": "Stripe",
+    "ar": "الدفع بالبطاقة الائتمانية"
+}
 
+paid_type_name_crypto = {
+    "en": "Crypto",
+    "ar": "الدفع بالعملات المشفرة"
+}
